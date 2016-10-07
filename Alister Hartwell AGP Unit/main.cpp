@@ -15,6 +15,7 @@ D3D_FEATURE_LEVEL g_featureLevel = D3D_FEATURE_LEVEL_11_0;
 ID3D11Device* g_pD3DDevice = NULL;
 ID3D11DeviceContext* g_pImmediateContext = NULL;
 IDXGISwapChain* g_pSwapChain = NULL;
+ID3D11RenderTargetView* g_pBackBufferRTView = NULL;
 //////////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 //////////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 HRESULT InitialiseD3D();
 void ShutDownD3D();
+void RenderFrame(void);
 //////////////////////////////////////////////////////////////////////////////////////
 // Entry point to the program. Initializes everything and goes into a message processing
 // loop. Idle time is used to render the scene.
@@ -55,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		else
 		{
 			
-				// do something
+			RenderFrame();
 		}
 	}
 
@@ -128,15 +130,19 @@ HRESULT InitialiseD3D()
 	UINT width = rc.right - rc.left;
 	UINT height = rc.bottom - rc.top;
 	UINT createDeviceFlags = 0;
+
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+
+
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE, // comment out this line if you need to test D3D 11.0 functionality on hardware that doesn't support it
 		D3D_DRIVER_TYPE_WARP, // comment this out also to use reference device
 		D3D_DRIVER_TYPE_REFERENCE,
 	};
+
 	UINT numDriverTypes = ARRAYSIZE(driverTypes);
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -144,9 +150,11 @@ HRESULT InitialiseD3D()
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
 	};
+
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
+
 	sd.BufferCount = 1;
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
@@ -158,6 +166,8 @@ HRESULT InitialiseD3D()
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = true;
+
+
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
 	{
 		g_driverType = driverTypes[driverTypeIndex];
@@ -170,14 +180,54 @@ HRESULT InitialiseD3D()
 	}
 	if (FAILED(hr))
 		return hr;
+
+	// Get pointer to back buffer texture
+	ID3D11Texture2D *pBackBufferTexture;
+	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+		(LPVOID*)&pBackBufferTexture);
+
+	if (FAILED(hr)) return hr;
+
+	// Use the back buffer texture pointer to create the render target view
+	hr = g_pD3DDevice->CreateRenderTargetView(pBackBufferTexture, NULL,
+		&g_pBackBufferRTView);
+	pBackBufferTexture->Release();
+
+	if (FAILED(hr)) return hr;
+
+	// Set the render target view
+	g_pImmediateContext->OMSetRenderTargets(1, &g_pBackBufferRTView, NULL);
+
+	// Set the viewport
+	D3D11_VIEWPORT viewport;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = width;
+	viewport.Height = height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	g_pImmediateContext->RSSetViewports(1, &viewport);
+
 	return S_OK;
 }
 //////////////////////////////////////////////////////////////////////////////////////
 // Clean up D3D objects
 //////////////////////////////////////////////////////////////////////////////////////
-void ShutdownD3D()
+void ShutDownD3D()
 {
+	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
 	if (g_pSwapChain) g_pSwapChain->Release();
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pD3DDevice) g_pD3DDevice->Release();
+}
+
+// Render frame
+void RenderFrame(void)
+{
+	// Clear the back buffer - choose a colour you like
+	float rgba_clear_colour[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
+	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
+	// RENDER HERE
+	// Display what has just been rendered
+	g_pSwapChain->Present(0, 0);
 }
