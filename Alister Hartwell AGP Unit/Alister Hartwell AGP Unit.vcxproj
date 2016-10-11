@@ -69,7 +69,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(DXSDK_DIR)Lib\x86;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;U:\Alister Hartwell AGP\DirectX\Include;$(IncludePath)</IncludePath>
     <LibraryPath>U:\Alister Hartwell AGP\DirectX\Lib\x86;$(LibraryPath)</LibraryPath>
     <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
