@@ -13,7 +13,7 @@
 HINSTANCE g_hInst = NULL;
 HWND g_hWnd =		NULL;
 // Rename for each tutorial
-char g_TutorialName[100] = "Alister Hartwell Tutorial 3\0";
+char g_TutorialName[100] = "Alister Hartwell Tutorial 4\0";
 
 D3D_DRIVER_TYPE			g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL		g_featureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -43,9 +43,11 @@ struct POS_COL_VERTEX
 struct CONSTANT_BUFFER_0
 {
 	float RedAmount; // 4 bytes
-	XMFLOAT3 packing_bytes; //3x4 bytes = 12 bytes
+	float Scale;		// 4 bytes
+	XMFLOAT2 packing_bytes; //2x4 bytes = 8 bytes
 };
 
+CONSTANT_BUFFER_0 cb0_values;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -167,6 +169,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 			DestroyWindow(g_hWnd);
+
+		if (wParam == VK_NUMPAD1)
+		{
+			cb0_values.Scale +=		-0.1f;
+			cb0_values.RedAmount +=	-0.1f;
+		}
+
+		if (wParam == VK_NUMPAD2)
+		{
+			cb0_values.Scale +=		0.1f;
+			cb0_values.RedAmount += 0.1f;
+		}
 
 		return 0;
 
@@ -438,8 +452,8 @@ void RenderFrame(void)
 	// Select which primitive type to use //03-01
 	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	CONSTANT_BUFFER_0 cb0_values;
-	cb0_values.RedAmount = 1.0f; // % of vertex red value / 1.0 == 100%
+	// % of vertex red value / 1.0 == 100%
+	//cb0_values.RedAmount = 1.0f;
 
 	//Upload the new values for the constant buffer
 	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0_values, 0, 0);

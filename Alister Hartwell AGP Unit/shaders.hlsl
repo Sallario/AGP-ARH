@@ -1,7 +1,8 @@
 cbuffer CBuffer0
 {
 	float red_fraction; // 4 bytes
-	float3 packing;		// 3x4 bytes = 12 bytes
+	float scale;		// 4 bytes 
+	float2 packing;		// 2x4 bytes = 8 bytes
 }
 
 
