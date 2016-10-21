@@ -13,7 +13,7 @@
 HINSTANCE g_hInst = NULL;
 HWND g_hWnd =		NULL;
 // Rename for each tutorial
-char g_TutorialName[100] = "Alister Hartwell Tutorial 2\0";
+char g_TutorialName[100] = "Alister Hartwell Tutorial 3\0";
 
 D3D_DRIVER_TYPE			g_driverType = D3D_DRIVER_TYPE_NULL;
 D3D_FEATURE_LEVEL		g_featureLevel = D3D_FEATURE_LEVEL_11_0;
@@ -29,6 +29,7 @@ ID3D11Buffer *			g_pVertexBuffer;
 ID3D11VertexShader*		g_pVertexShader;
 ID3D11PixelShader*		g_pPixelShader;
 ID3D11InputLayout*		g_pInputLayout;
+ID3D11Buffer*			g_pConstantBuffer0;
 
 // Vertex Structure
 struct POS_COL_VERTEX
@@ -36,6 +37,16 @@ struct POS_COL_VERTEX
 	XMFLOAT3 Pos;
 	XMFLOAT4 Col;
 };
+
+
+// Constant buffer structure. Pack to 16 Bytes, no single element can cross 16byte boundary
+struct CONSTANT_BUFFER_0
+{
+	float RedAmount; // 4 bytes
+	XMFLOAT3 packing_bytes; //3x4 bytes = 12 bytes
+};
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 //////////////////////////////////////////////////////////////////////////////////////
@@ -226,6 +237,8 @@ HRESULT InitialiseD3D()
 		if (SUCCEEDED(hr))
 			break;
 	}
+
+
 	if (FAILED(hr))
 		return hr;
 
@@ -237,8 +250,8 @@ HRESULT InitialiseD3D()
 	if (FAILED(hr)) return hr;
 
 	// Use the back buffer texture pointer to create the render target view
-	hr = g_pD3DDevice->CreateRenderTargetView(pBackBufferTexture, NULL,
-		&g_pBackBufferRTView);
+	hr = g_pD3DDevice->CreateRenderTargetView(pBackBufferTexture, NULL, &g_pBackBufferRTView);
+	
 	pBackBufferTexture->Release();
 
 	if (FAILED(hr)) return hr;
@@ -265,10 +278,19 @@ HRESULT InitialiseD3D()
 //////////////////////////////////////////////////////////////////////////////////////
 void ShutDownD3D()
 {
-	if (g_pBackBufferRTView) g_pBackBufferRTView->Release();
-	if (g_pSwapChain) g_pSwapChain->Release();
-	if (g_pImmediateContext) g_pImmediateContext->Release();
-	if (g_pD3DDevice) g_pD3DDevice->Release();
+	
+	if (g_pVertexBuffer)		 g_pVertexBuffer->Release(); //03-01
+	if (g_pInputLayout)			 g_pInputLayout->Release(); //03-01
+	if (g_pVertexShader)		 g_pVertexShader->Release(); //03-01
+	if (g_pPixelShader)			 g_pPixelShader->Release(); //03-01
+	if (g_pConstantBuffer0)		 g_pConstantBuffer0->Release();
+
+
+	////////////////////////////////////////////////////////////
+	if (g_pBackBufferRTView)	 g_pBackBufferRTView->Release();
+	if (g_pSwapChain)			 g_pSwapChain->Release();
+	if (g_pImmediateContext)	 g_pImmediateContext->Release();
+	if (g_pD3DDevice)			 g_pD3DDevice->Release();
 }
 
 
@@ -285,27 +307,114 @@ HRESULT InitialiseGraphics() //03-01
 
 	{ XMFLOAT3(0.9f,0.9f,0.0f),			XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) },
 	{ XMFLOAT3(0.9f,-0.9f,0.0f),		XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-	{ XMFLOAT3(0.9f,-0.9f,0.0f),		XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
+	{ XMFLOAT3(-0.9f,-0.9f,0.0f),		XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }
 
 	};
 
 	// Set up and create vertex buffer
-	D3D11_BUFFER_DESC			 bufferDesc;
+	D3D11_BUFFER_DESC				bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(POS_COL_VERTEX) * 3;
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDesc.Usage =				D3D11_USAGE_DYNAMIC; // Allows the buffer to be dynamically accessed by the CPU and GPU
+	bufferDesc.ByteWidth =			sizeof(POS_COL_VERTEX) * 3; // Total size of the buffer, 3 vertices
+	bufferDesc.BindFlags =			D3D11_BIND_VERTEX_BUFFER; // Use as a vetex buffer
+	bufferDesc.CPUAccessFlags =		D3D11_CPU_ACCESS_WRITE; // Allow the CPU write access
 
-	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer);
+	hr = g_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &g_pVertexBuffer); // Create the buffer
+
+	if (FAILED(hr)) // Return error code on failure
+		return hr;
+	
+	// Create Constant buffer
+	D3D11_BUFFER_DESC				constant_buffer_desc;
+	ZeroMemory(&constant_buffer_desc, sizeof(constant_buffer_desc));
+
+	constant_buffer_desc.Usage =		D3D11_USAGE_DEFAULT; // Can use UpdateSubresource() to update
+	constant_buffer_desc.ByteWidth =	16; // Must be a multiple of 16, calculate from Constant buffer struct
+	constant_buffer_desc.BindFlags =	D3D11_BIND_CONSTANT_BUFFER; // Use as a constant buffer
+
+	hr = g_pD3DDevice->CreateBuffer(&constant_buffer_desc, NULL, &g_pConstantBuffer0);
 
 	if (FAILED(hr))
-
-	{
 		return hr;
+
+
+	// Copy the vertices into the buffer
+	D3D11_MAPPED_SUBRESOURCE ms;
+
+	// Lock the buffer to allow writing
+	g_pImmediateContext->Map(g_pVertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+
+	// Copy the data
+	memcpy(ms.pData, vertices, sizeof(vertices));
+
+	// Unlock the buffer
+	g_pImmediateContext->Unmap(g_pVertexBuffer, NULL);
+
+	// Load and compile the pixel and vertex shaders - use vs_5_0 to target DX11 hardware only
+	ID3DBlob *VS, *PS, *error;
+
+	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, &error, 0);
+
+
+	if (error != 0) // Check for a compilation error
+	{
+		OutputDebugStringA((char*)error->GetBufferPointer());
+		error->Release();
+		
+		if (FAILED(hr)) // Don't fail if error
+			return hr;
+
 	}
-	///////// FINISH THIS FROM PAGE 4 OF TUTORIAL YOU LAZY FUCK
+
+
+	hr = D3DX11CompileFromFile("shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, &error, 0);
+
+	if (error != 0) // Check for a compilation error
+	{
+		OutputDebugStringA((char*)error->GetBufferPointer());
+		error->Release();
+
+		if (FAILED(hr)) // Don't fail if error
+			return hr;
+
+	}
+
+
+
+	// Create shader objects
+
+	hr = g_pD3DDevice->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &g_pVertexShader);
+
+	if (FAILED(hr))
+		return hr;
+
+	hr = g_pD3DDevice->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &g_pPixelShader);
+
+	if (FAILED(hr))
+		return hr;
+
+
+	// Set the shader objects as active
+	g_pImmediateContext->VSSetShader(g_pVertexShader, 0, 0);
+	g_pImmediateContext->PSSetShader(g_pPixelShader, 0, 0);
+
+	// Create and set the input layout object
+	D3D11_INPUT_ELEMENT_DESC iedesc[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+
+	hr = g_pD3DDevice->CreateInputLayout(iedesc, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &g_pInputLayout);
+
+	if (FAILED(hr))
+		return hr;
+
+	g_pImmediateContext->IASetInputLayout(g_pInputLayout);
+
+	return S_OK;
+	
 }
 
 
@@ -318,6 +427,7 @@ void RenderFrame(void)
 	// Clear the back buffer - choose a colour you like
 	float rgba_clear_colour[4] = { 0.1f, 0.2f, 0.6f, 1.0f };
 	g_pImmediateContext->ClearRenderTargetView(g_pBackBufferRTView, rgba_clear_colour);
+
 	// RENDER HERE
 	// Set Vertex Buffer // 03-01
 	UINT stride = sizeof(POS_COL_VERTEX);
@@ -327,6 +437,14 @@ void RenderFrame(void)
 
 	// Select which primitive type to use //03-01
 	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	CONSTANT_BUFFER_0 cb0_values;
+	cb0_values.RedAmount = 1.0f; // % of vertex red value / 1.0 == 100%
+
+	//Upload the new values for the constant buffer
+	g_pImmediateContext->UpdateSubresource(g_pConstantBuffer0, 0, 0, &cb0_values, 0, 0);
+
+	g_pImmediateContext->VSSetConstantBuffers(0, 1, &g_pConstantBuffer0); // Set buffer to be active, 1 buffer in slot 0
 
 	// Draw the Vertex Buffer to the back buffer //03-01
 	g_pImmediateContext->Draw(3, 0);
