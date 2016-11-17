@@ -1,5 +1,5 @@
-﻿Build started 06/10/2016 16:49:36.
-     1>Project "U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit.vcxproj" on node 2 (Build target(s)).
+﻿Build started 11/11/2016 10:55:19.
+     1>Project "U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
@@ -15,11 +15,42 @@
          c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50445): note: see previous definition of 'D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS'
      1>u:\alister hartwell agp\directx\include\d3d10.h(609): warning C4005: 'D3D10_ERROR_FILE_NOT_FOUND': macro redefinition
          c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50454): note: see previous definition of 'D3D10_ERROR_FILE_NOT_FOUND'
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2662): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2663): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2664): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2665): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2666): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2667): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2668): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2689): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2690): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2691): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2694): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2695): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2698): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2702): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2712): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2713): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2715): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2716): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2717): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2727): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2728): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2729): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2730): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2731): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2732): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2742): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2743): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\directx\include\xnamath.h(2754): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
+     1>u:\alister hartwell agp\alister hartwell agp unit\main.cpp(283): warning C4244: '=': conversion from 'UINT' to 'FLOAT', possible loss of data
+     1>u:\alister hartwell agp\alister hartwell agp unit\main.cpp(284): warning C4244: '=': conversion from 'UINT' to 'FLOAT', possible loss of data
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.lib" /MACHINE:X86 Debug\main.obj
-         Alister Hartwell AGP Unit.vcxproj -> U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.exe
-     1>Done Building Project "U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit.vcxproj" (Build target(s)).
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib d3dx11.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.lib" /MACHINE:X86 Debug\main.obj
+     1>main.obj : error LNK2019: unresolved external symbol _DXTraceA@20 referenced in function _WinMain@16
+     1>U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Debug\Alister Hartwell AGP Unit.exe : fatal error LNK1120: 1 unresolved externals
+     1>Done Building Project "U:\Alister Hartwell AGP\Alister Hartwell AGP Unit\Alister Hartwell AGP Unit.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:07.44
+Time Elapsed 00:00:10.12
